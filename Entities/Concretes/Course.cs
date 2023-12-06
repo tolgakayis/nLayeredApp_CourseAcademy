@@ -9,7 +9,6 @@ namespace Entities.Concretes
 {
 	public class Course : Entity<Guid>
 	{
-		//public int CourseId { get; set; }
 		public string CourseName { get; set; }
 		public string? CourseDescription { get; set; }
 		public string? InstructorName {  get; set; }
