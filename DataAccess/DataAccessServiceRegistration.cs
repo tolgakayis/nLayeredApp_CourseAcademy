@@ -19,6 +19,7 @@ namespace DataAccess
 			services.AddDbContext<KodlamaioContext>(options => options.UseInMemoryDatabase("nArchitecture"));
 			services.AddScoped<ICourseDal, EfCourseDal>();
 			services.AddScoped<ICategoryDal, EfCategoryDal>();
+			services.AddScoped<IInstructorDal, EfInstructorDal>();
 			return services;
 		}
 	}

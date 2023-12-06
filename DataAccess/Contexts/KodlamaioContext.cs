@@ -15,6 +15,7 @@ namespace DataAccess.Contexts
 		protected IConfiguration Configuration { get; set; }
 		public DbSet<Course> Courses { get; set; }
 		public DbSet<Category> Categories { get; set; }
+		public DbSet<Instructor> Instructors { get; set; }
 
 		public KodlamaioContext(DbContextOptions dbContextOptions, IConfiguration configuration) : base(dbContextOptions)
 		{

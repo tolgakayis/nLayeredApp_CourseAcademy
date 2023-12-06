@@ -7,8 +7,8 @@ using Core.Entities;
 
 namespace Entities.Concretes
 {
-	public class Category : Entity<Guid>
+	public class Instructor : Entity<Guid>
 	{
-		public string CategoryName { get; set; }
-	}
+        public string InstructorName { get; set; }
+    }
 }
