@@ -9,35 +9,47 @@ using Business.Dtos.Responses;
 using Core.DataAccess.Paging;
 using DataAccess.Abstracts;
 using Entities.Concretes;
+using AutoMapper;
 
 namespace Business.Concretes
 {
 	public class CourseManager : ICourseService
 	{
 		private ICourseDal _courseDal;
-		public CourseManager(ICourseDal courseDal)
+		private IMapper _mapper;
+		public CourseManager(ICourseDal courseDal, IMapper mapper)
 		{
 			_courseDal = courseDal;
+			_mapper = mapper;
 		}
 		public async Task<CreatedCourseResponse> Add(CreateCourseRequest createCourseRequest)
 		{
-			Course course = new Course();
-			course.Id = Guid.NewGuid();
-			course.CourseName = createCourseRequest.CourseName;
-			course.CourseDescription = createCourseRequest.CourseDescription;
-			course.InstructorName = createCourseRequest.InstructorName;
+            Course course =  _mapper.Map<CreateCourseRequest, Course>(createCourseRequest);
+            course.Id = Guid.NewGuid();
 
-			Course createdCourse = await _courseDal.AddAsync(course);
+            Course createdCourse = await _courseDal.AddAsync(course);
 
-			CreatedCourseResponse createdCourseResponse = new CreatedCourseResponse();
-			createdCourseResponse.Id = createdCourse.Id;
-			createdCourseResponse.CourseName = createCourseRequest.CourseName;
-			createdCourseResponse.CourseDescription = createCourseRequest.CourseDescription;
-			createdCourseResponse.InstructorName = createCourseRequest.InstructorName;
+            CreatedCourseResponse createdCourseResponse = _mapper.Map<CreatedCourseResponse>(createdCourse);
 
 			return createdCourseResponse;
 
-		}
+            //Course course = new Course();
+            //course.Id = Guid.NewGuid();
+            //course.CourseName = createCourseRequest.CourseName;
+            //course.CourseDescription = createCourseRequest.CourseDescription;
+            //course.InstructorName = createCourseRequest.InstructorName;
+
+            //Course createdCourse = await _courseDal.AddAsync(course);
+
+            //CreatedCourseResponse createdCourseResponse = new CreatedCourseResponse();
+            //createdCourseResponse.Id = createdCourse.Id;
+            //createdCourseResponse.CourseName = createCourseRequest.CourseName;
+            //createdCourseResponse.CourseDescription = createCourseRequest.CourseDescription;
+            //createdCourseResponse.InstructorName = createCourseRequest.InstructorName;
+
+            //return createdCourseResponse;
+
+        }
 
 		// GetListCourseResponse - done
 		// Tobetodaki tüm nesneleri response request patternine göre ekle - done
@@ -45,30 +57,40 @@ namespace Business.Concretes
 
 		public async Task<Paginate<GetListCourseResponse>> GetListAsync()
 		{
-			var result = _courseDal.GetListAsync();
+            var courseList = await _courseDal.GetListAsync();
 
-			List<GetListCourseResponse> getList = new List<GetListCourseResponse>();
+            List<GetListCourseResponse> getList = _mapper.Map<List<GetListCourseResponse>>(courseList.Items);
 
-			// course list mapping
-			foreach (var item in result.Result.Items)
-			{
-				GetListCourseResponse getListedProductResponse = new GetListCourseResponse();
-				getListedProductResponse.Id = item.Id;
-				getListedProductResponse.CourseName = item.CourseName;
-				getListedProductResponse.CourseDescription = item.CourseDescription;
-				getListedProductResponse.InstructorName = item.InstructorName;
-				getList.Add(getListedProductResponse);
-			}
+            Paginate<GetListCourseResponse> paginate = _mapper.Map<Paginate<GetListCourseResponse>>(courseList);
 
-			// paginate mapping
-			Paginate<GetListCourseResponse> _paginate = new Paginate<GetListCourseResponse>();
-			_paginate.Pages = result.Result.Pages;
-			_paginate.Items = getList;
-			_paginate.Index = result.Result.Index;
-			_paginate.Size = result.Result.Size;
-			_paginate.Count = result.Result.Count;
+            paginate.Items = getList;
 
-			return _paginate;
-		}
+            return paginate;
+
+            //var result = _courseDal.GetListAsync();
+            //
+            //List<GetListCourseResponse> getList = new List<GetListCourseResponse>();
+            //
+            //// course list mapping
+            //foreach (var item in result.Result.Items)
+            //{
+            //	GetListCourseResponse getListedProductResponse = new GetListCourseResponse();
+            //	getListedProductResponse.Id = item.Id;
+            //	getListedProductResponse.CourseName = item.CourseName;
+            //	getListedProductResponse.CourseDescription = item.CourseDescription;
+            //	getListedProductResponse.InstructorName = item.InstructorName;
+            //	getList.Add(getListedProductResponse);
+            //}
+            //
+            //// paginate mapping
+            //Paginate<GetListCourseResponse> paginate = new Paginate<GetListCourseResponse>();
+            //paginate.Pages = result.Result.Pages;
+            //paginate.Items = getList;
+            //paginate.Index = result.Result.Index;
+            //paginate.Size = result.Result.Size;
+            //paginate.Count = result.Result.Count;
+            //
+            //return paginate;
+        }
 	}
 }

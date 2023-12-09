@@ -1,11 +1,15 @@
 using Business;
+using Business.Automapper;
+using Core.Entities;
 using DataAccess;
+using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddBusinessServices();
 builder.Services.AddDataAccessServices(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(CourseMapping));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
