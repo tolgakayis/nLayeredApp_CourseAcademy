@@ -19,13 +19,8 @@ namespace Business.Automapper
             CreateMap<CreateCourseRequest, Course>();
             CreateMap<Course, CreatedCourseResponse>();
 
-            CreateMap<Course, GetListCourseResponse>();
-            CreateMap<Paginate<Course>, Paginate<GetListCourseResponse>>();
+            CreateMap<Course, CreatedCourseResponse>();
+            CreateMap<Paginate<Course>, Paginate<CreatedCourseResponse>>();
         }
     }
-    //public class InstructorMapping : Profile
-    //{ public InstructorMapping()
-    //    {
-    //
-    //    } }
 }

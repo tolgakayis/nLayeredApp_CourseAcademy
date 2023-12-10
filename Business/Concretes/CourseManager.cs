@@ -10,10 +10,11 @@ using Core.DataAccess.Paging;
 using DataAccess.Abstracts;
 using Entities.Concretes;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.InMemory.Query.Internal;
 
 namespace Business.Concretes
 {
-	public class CourseManager : ICourseService
+    public class CourseManager : ICourseService
 	{
 		private ICourseDal _courseDal;
 		private IMapper _mapper;
@@ -24,7 +25,7 @@ namespace Business.Concretes
 		}
 		public async Task<CreatedCourseResponse> Add(CreateCourseRequest createCourseRequest)
 		{
-            Course course =  _mapper.Map<CreateCourseRequest, Course>(createCourseRequest);
+            Course course = _mapper.Map<Course>(createCourseRequest);
             course.Id = Guid.NewGuid();
 
             Course createdCourse = await _courseDal.AddAsync(course);
@@ -53,15 +54,15 @@ namespace Business.Concretes
 
 		// GetListCourseResponse - done
 		// Tobetodaki tüm nesneleri response request patternine göre ekle - done
-		// sistemi automappera çek - ?
+		// sistemi automappera çek - done
 
-		public async Task<Paginate<GetListCourseResponse>> GetListAsync()
+		public async Task<Paginate<CreatedCourseResponse>> GetListAsync()
 		{
             var courseList = await _courseDal.GetListAsync();
 
-            List<GetListCourseResponse> getList = _mapper.Map<List<GetListCourseResponse>>(courseList.Items);
+            List<CreatedCourseResponse> getList = _mapper.Map<List<CreatedCourseResponse>>(courseList.Items);
 
-            Paginate<GetListCourseResponse> paginate = _mapper.Map<Paginate<GetListCourseResponse>>(courseList);
+            Paginate<CreatedCourseResponse> paginate = _mapper.Map<Paginate<CreatedCourseResponse>>(courseList);
 
             paginate.Items = getList;
 

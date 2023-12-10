@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Business.Abstracts;
 using Business.Dtos.Requests;
 using Business.Dtos.Responses;
@@ -16,49 +17,69 @@ namespace Business.Concretes
 	public class InstructorManager : IInstructorService
 	{
 		private IInstructorDal _instructorDal;
-        public InstructorManager(IInstructorDal instructorDal)
+		private IMapper _mapper;
+        public InstructorManager(IInstructorDal instructorDal, IMapper mapper)
         {
             _instructorDal = instructorDal;
+			_mapper = mapper;
         }
         public async Task<CreatedInstructorResponse> Add(CreateInstructorRequest createInstructorRequest)
 		{
-			Instructor instructor = new Instructor();
+			Instructor instructor = _mapper.Map<Instructor>(createInstructorRequest);
 			instructor.Id = Guid.NewGuid();
-			instructor.InstructorName = createInstructorRequest.InstructorName;
 
 			Instructor createdInstructor = await _instructorDal.AddAsync(instructor);
 
-			CreatedInstructorResponse createdInstructorResponse = new CreatedInstructorResponse();
-			createdInstructorResponse.Id = createdInstructor.Id;
-			createdInstructorResponse.InstructorName = createdInstructor.InstructorName;
-
+			CreatedInstructorResponse createdInstructorResponse = _mapper.Map<CreatedInstructorResponse>(createdInstructor);
 			return createdInstructorResponse;
+
+			//Instructor instructor = new Instructor();
+			//instructor.Id = Guid.NewGuid();
+			//instructor.InstructorName = createInstructorRequest.InstructorName;
+			//
+			//Instructor createdInstructor = await _instructorDal.AddAsync(instructor);
+			//
+			//CreatedInstructorResponse createdInstructorResponse = new CreatedInstructorResponse();
+			//createdInstructorResponse.Id = createdInstructor.Id;
+			//createdInstructorResponse.InstructorName = createdInstructor.InstructorName;
+			//
+			//return createdInstructorResponse;
 		}
 
 		public async Task<Paginate<CreatedInstructorResponse>> GetListAsync()
 		{
-			var result = _instructorDal.GetListAsync();
+			var instructorList = await _instructorDal.GetListAsync();
 
-			List<CreatedInstructorResponse> getList = new List<CreatedInstructorResponse>();
+			List<CreatedInstructorResponse> getList = _mapper.Map<List<CreatedInstructorResponse>>(instructorList.Items);
 
-			// category list mapping
-			foreach (var item in result.Result.Items)
-			{
-				CreatedInstructorResponse getListedInstructorResponse = new CreatedInstructorResponse();
-				getListedInstructorResponse.Id = item.Id;
-				getListedInstructorResponse.InstructorName = item.InstructorName;
-				getList.Add(getListedInstructorResponse);
-			}
+			Paginate<CreatedInstructorResponse> paginate = _mapper.Map<Paginate<CreatedInstructorResponse>>(instructorList);
 
-			// paginate mapping
-			Paginate<CreatedInstructorResponse> _paginate = new Paginate<CreatedInstructorResponse>();
-			_paginate.Pages = result.Result.Pages;
-			_paginate.Items = getList;
-			_paginate.Index = result.Result.Index;
-			_paginate.Size = result.Result.Size;
-			_paginate.Count = result.Result.Count;
+			paginate.Items = getList;
 
-			return _paginate;
+			return paginate;
+
+			//var result = _instructorDal.GetListAsync();
+			//
+			//List<CreatedInstructorResponse> getList = new List<CreatedInstructorResponse>();
+			//
+			//// category list mapping
+			//foreach (var item in result.Result.Items)
+			//{
+			//	CreatedInstructorResponse getListedInstructorResponse = new CreatedInstructorResponse();
+			//	getListedInstructorResponse.Id = item.Id;
+			//	getListedInstructorResponse.InstructorName = item.InstructorName;
+			//	getList.Add(getListedInstructorResponse);
+			//}
+			//
+			//// paginate mapping
+			//Paginate<CreatedInstructorResponse> _paginate = new Paginate<CreatedInstructorResponse>();
+			//_paginate.Pages = result.Result.Pages;
+			//_paginate.Items = getList;
+			//_paginate.Index = result.Result.Index;
+			//_paginate.Size = result.Result.Size;
+			//_paginate.Count = result.Result.Count;
+			//
+			//return _paginate;
 		}
 	}
 }
