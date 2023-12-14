@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Core.Entities;
 
-namespace Entities.Concretes
+namespace Business.Dtos.Requests
 {
-	public class Instructor : Entity<Guid>
-	{
+    public class UpdateInstructorRequest
+    {
+        public Guid InstructorId { get; set; }
         public string InstructorName { get; set; }
-        public List<Course>? Courses { get; set; }
+
     }
 }

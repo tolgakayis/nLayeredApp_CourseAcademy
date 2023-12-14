@@ -10,7 +10,6 @@ namespace Business.Dtos.Responses
 	{
 		public Guid Id { get; set; }
 		public string CourseName { get; set; }
-		public string? CourseDescription { get; set; }
-		public string InstructorName { get; set; }
+		public string CourseDescription { get; set; }
 	}
 }

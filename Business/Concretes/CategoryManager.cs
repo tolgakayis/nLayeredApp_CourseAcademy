@@ -11,6 +11,7 @@ using Core.DataAccess.Paging;
 using DataAccess.Abstracts;
 using DataAccess.Concretes;
 using Entities.Concretes;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business.Concretes
 {
@@ -32,53 +33,26 @@ namespace Business.Concretes
 
 			CreatedCategoryResponse createdCategoryResponse = _mapper.Map<CreatedCategoryResponse>(createdCategory);
 			return createdCategoryResponse;
-
-			//Category category = new Category();
-			//category.Id = Guid.NewGuid();
-			//category.CategoryName = createCategoryRequest.CategoryName;
-			//
-			//Category createdCategory = await _categoryDal.AddAsync(category);
-			//
-			//CreatedCategoryResponse createdCategoryResponse = new CreatedCategoryResponse();
-			//createdCategoryResponse.Id = createdCategory.Id;
-			//createdCategoryResponse.CategoryName = createdCategory.CategoryName;
-			//
-			//return createdCategoryResponse;
 		}
-
-		public async Task<Paginate<CreatedCategoryResponse>> GetListAsync()
+        public async Task<Paginate<GetListedCategoryResponse>> GetListAsync()
 		{
-			var category = await _categoryDal.GetListAsync();
+			var data = await _categoryDal.GetListAsync();
 
-			List<CreatedCategoryResponse> getList = _mapper.Map<List<CreatedCategoryResponse>>(category.Items);
-
-			Paginate<CreatedCategoryResponse> paginate = _mapper.Map<Paginate<CreatedCategoryResponse>>(category);
-
-			paginate.Items = getList;
-			return paginate;
-
-			//var result = _categoryDal.GetListAsync();
-			//
-			//List<CreatedCategoryResponse> getList = new List<CreatedCategoryResponse>();
-			//
-			//// category list mapping
-			//foreach (var item in result.Result.Items)
-			//{
-			//	CreatedCategoryResponse getListedCategoryResponse = new CreatedCategoryResponse();
-			//	getListedCategoryResponse.Id = item.Id;
-			//	getListedCategoryResponse.CategoryName = item.CategoryName;
-			//	getList.Add(getListedCategoryResponse);
-			//}
-			//
-			//// paginate mapping
-			//Paginate<CreatedCategoryResponse> _paginate = new Paginate<CreatedCategoryResponse>();
-			//_paginate.Pages = result.Result.Pages;
-			//_paginate.Items = getList;
-			//_paginate.Index = result.Result.Index;
-			//_paginate.Size = result.Result.Size;
-			//_paginate.Count = result.Result.Count;
-			//
-			//return _paginate;
+			return _mapper.Map<Paginate<GetListedCategoryResponse>>(data);
 		}
-	}
+        public async Task<DeletedCategoryResponse> Delete(DeleteCategoryRequest deleteCategoryRequest)
+        {
+			Category category = await _categoryDal.GetAsync(p => p.Id == deleteCategoryRequest.CategoryId);
+			await _categoryDal.DeleteAsync(category);
+			return _mapper.Map<DeletedCategoryResponse>(category);
+        }
+
+        public async Task<UpdatedCategoryResponse> Update(UpdateCategoryRequest updateCategoryRequest)
+        {
+            Category category = await _categoryDal.GetAsync(p => p.Id == updateCategoryRequest.CategoryId);
+            _mapper.Map(updateCategoryRequest, category);
+			category = await _categoryDal.UpdateAsync(category);
+            return _mapper.Map<UpdatedCategoryResponse>(category);
+        }
+    }
 }

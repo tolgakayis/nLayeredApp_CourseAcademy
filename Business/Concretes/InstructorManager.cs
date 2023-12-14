@@ -30,56 +30,27 @@ namespace Business.Concretes
 
 			Instructor createdInstructor = await _instructorDal.AddAsync(instructor);
 
-			CreatedInstructorResponse createdInstructorResponse = _mapper.Map<CreatedInstructorResponse>(createdInstructor);
-			return createdInstructorResponse;
-
-			//Instructor instructor = new Instructor();
-			//instructor.Id = Guid.NewGuid();
-			//instructor.InstructorName = createInstructorRequest.InstructorName;
-			//
-			//Instructor createdInstructor = await _instructorDal.AddAsync(instructor);
-			//
-			//CreatedInstructorResponse createdInstructorResponse = new CreatedInstructorResponse();
-			//createdInstructorResponse.Id = createdInstructor.Id;
-			//createdInstructorResponse.InstructorName = createdInstructor.InstructorName;
-			//
-			//return createdInstructorResponse;
+            return _mapper.Map<CreatedInstructorResponse>(createdInstructor);
 		}
 
-		public async Task<Paginate<CreatedInstructorResponse>> GetListAsync()
+        public async Task<Paginate<GetListedInstructorResponse>> GetListAsync()
 		{
-			var instructorList = await _instructorDal.GetListAsync();
-
-			List<CreatedInstructorResponse> getList = _mapper.Map<List<CreatedInstructorResponse>>(instructorList.Items);
-
-			Paginate<CreatedInstructorResponse> paginate = _mapper.Map<Paginate<CreatedInstructorResponse>>(instructorList);
-
-			paginate.Items = getList;
-
-			return paginate;
-
-			//var result = _instructorDal.GetListAsync();
-			//
-			//List<CreatedInstructorResponse> getList = new List<CreatedInstructorResponse>();
-			//
-			//// category list mapping
-			//foreach (var item in result.Result.Items)
-			//{
-			//	CreatedInstructorResponse getListedInstructorResponse = new CreatedInstructorResponse();
-			//	getListedInstructorResponse.Id = item.Id;
-			//	getListedInstructorResponse.InstructorName = item.InstructorName;
-			//	getList.Add(getListedInstructorResponse);
-			//}
-			//
-			//// paginate mapping
-			//Paginate<CreatedInstructorResponse> _paginate = new Paginate<CreatedInstructorResponse>();
-			//_paginate.Pages = result.Result.Pages;
-			//_paginate.Items = getList;
-			//_paginate.Index = result.Result.Index;
-			//_paginate.Size = result.Result.Size;
-			//_paginate.Count = result.Result.Count;
-			//
-			//return _paginate;
+			var data = await _instructorDal.GetListAsync();
+			return _mapper.Map<Paginate<GetListedInstructorResponse>>(data);
 		}
-	}
+        public async Task<DeletedInstructorResponse> Delete(DeleteInstructorRequest deleteInstructorRequest)
+        {
+            Instructor instructor = await _instructorDal.GetAsync(p => p.Id == deleteInstructorRequest.InstructorId);
+            await _instructorDal.DeleteAsync(instructor);
+            return _mapper.Map<DeletedInstructorResponse>(instructor);
+        }
+
+        public async Task<UpdatedInstructorResponse> Update(UpdateInstructorRequest updateInstructorRequest)
+        {
+            Instructor instructor = await _instructorDal.GetAsync(p => p.Id == updateInstructorRequest.InstructorId);
+            _mapper.Map(updateInstructorRequest, instructor);
+            await _instructorDal.UpdateAsync(instructor);
+            return _mapper.Map<UpdatedInstructorResponse>(instructor);
+        }
+    }
 }

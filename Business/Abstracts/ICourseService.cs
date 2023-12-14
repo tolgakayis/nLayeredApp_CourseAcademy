@@ -12,7 +12,9 @@ namespace Business.Abstracts
 {
 	public interface ICourseService
 	{
-		Task<Paginate<CreatedCourseResponse>> GetListAsync();
+		Task<Paginate<GetListedCourseResponse>> GetListAsync();
 		Task<CreatedCourseResponse> Add(CreateCourseRequest createCourseRequest);
-	}
+		Task<UpdatedCourseResponse> Update(UpdateCourseRequest updateCourseRequest);
+		Task<DeletedCourseResponse> Delete(DeleteCourseRequest deleteCourseRequest);
+    }
 }

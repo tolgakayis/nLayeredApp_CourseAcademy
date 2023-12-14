@@ -11,6 +11,8 @@ using DataAccess.Abstracts;
 using Entities.Concretes;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.InMemory.Query.Internal;
+using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
 
 namespace Business.Concretes
 {
@@ -30,68 +32,29 @@ namespace Business.Concretes
 
             Course createdCourse = await _courseDal.AddAsync(course);
 
-            CreatedCourseResponse createdCourseResponse = _mapper.Map<CreatedCourseResponse>(createdCourse);
-
-			return createdCourseResponse;
-
-            //Course course = new Course();
-            //course.Id = Guid.NewGuid();
-            //course.CourseName = createCourseRequest.CourseName;
-            //course.CourseDescription = createCourseRequest.CourseDescription;
-            //course.InstructorName = createCourseRequest.InstructorName;
-
-            //Course createdCourse = await _courseDal.AddAsync(course);
-
-            //CreatedCourseResponse createdCourseResponse = new CreatedCourseResponse();
-            //createdCourseResponse.Id = createdCourse.Id;
-            //createdCourseResponse.CourseName = createCourseRequest.CourseName;
-            //createdCourseResponse.CourseDescription = createCourseRequest.CourseDescription;
-            //createdCourseResponse.InstructorName = createCourseRequest.InstructorName;
-
-            //return createdCourseResponse;
-
+            return _mapper.Map<CreatedCourseResponse>(createdCourse);
         }
-
-		// GetListCourseResponse - done
-		// Tobetodaki tüm nesneleri response request patternine göre ekle - done
-		// sistemi automappera çek - done
-
-		public async Task<Paginate<CreatedCourseResponse>> GetListAsync()
+        public async Task<Paginate<GetListedCourseResponse>> GetListAsync()
 		{
-            var courseList = await _courseDal.GetListAsync();
+            var data = await _courseDal.GetListAsync(
+                include: p => p.Include(p => p.Category).Include(b => b.Instructor));
 
-            List<CreatedCourseResponse> getList = _mapper.Map<List<CreatedCourseResponse>>(courseList.Items);
-
-            Paginate<CreatedCourseResponse> paginate = _mapper.Map<Paginate<CreatedCourseResponse>>(courseList);
-
-            paginate.Items = getList;
-
-            return paginate;
-
-            //var result = _courseDal.GetListAsync();
-            //
-            //List<GetListCourseResponse> getList = new List<GetListCourseResponse>();
-            //
-            //// course list mapping
-            //foreach (var item in result.Result.Items)
-            //{
-            //	GetListCourseResponse getListedProductResponse = new GetListCourseResponse();
-            //	getListedProductResponse.Id = item.Id;
-            //	getListedProductResponse.CourseName = item.CourseName;
-            //	getListedProductResponse.CourseDescription = item.CourseDescription;
-            //	getListedProductResponse.InstructorName = item.InstructorName;
-            //	getList.Add(getListedProductResponse);
-            //}
-            //
-            //// paginate mapping
-            //Paginate<GetListCourseResponse> paginate = new Paginate<GetListCourseResponse>();
-            //paginate.Pages = result.Result.Pages;
-            //paginate.Items = getList;
-            //paginate.Index = result.Result.Index;
-            //paginate.Size = result.Result.Size;
-            //paginate.Count = result.Result.Count;
-            //
-            //return paginate;
+            return _mapper.Map<Paginate<GetListedCourseResponse>>(data);
         }
-	}
+        public async Task<DeletedCourseResponse> Delete(DeleteCourseRequest deleteCourseRequest)
+        {
+            Course course = await _courseDal.GetAsync(p => p.Id == deleteCourseRequest.CourseId);
+            await _courseDal.DeleteAsync(course);
+            return _mapper.Map<DeletedCourseResponse>(course);
+        }
+
+        public async Task<UpdatedCourseResponse> Update(UpdateCourseRequest updateCourseRequest)
+        {
+            Course course = await _courseDal.GetAsync(p => p.Id ==  updateCourseRequest.CourseId);
+            _mapper.Map(updateCourseRequest, course);
+            course = await _courseDal.UpdateAsync(course);
+            return _mapper.Map<UpdatedCourseResponse>(course);
+        }
+
+    }
 }

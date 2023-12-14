@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Core.Entities;
 
-namespace Entities.Concretes
+namespace Business.Dtos.Responses
 {
-	public class Instructor : Entity<Guid>
-	{
+    public class DeletedInstructorResponse
+    {
+        public Guid Id { get; set; }
         public string InstructorName { get; set; }
-        public List<Course>? Courses { get; set; }
+        public DateTime DeletedDate { get; set; }
     }
 }
