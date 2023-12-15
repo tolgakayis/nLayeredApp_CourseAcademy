@@ -13,20 +13,24 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore.InMemory.Query.Internal;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
+using Business.Rules;
 
 namespace Business.Concretes
 {
     public class CourseManager : ICourseService
 	{
+        private CourseBusinessRules _courseBusinessRules;
 		private ICourseDal _courseDal;
 		private IMapper _mapper;
-		public CourseManager(ICourseDal courseDal, IMapper mapper)
+		public CourseManager(ICourseDal courseDal, IMapper mapper, CourseBusinessRules courseBusinessRules)
 		{
 			_courseDal = courseDal;
 			_mapper = mapper;
+            _courseBusinessRules = courseBusinessRules;
 		}
 		public async Task<CreatedCourseResponse> Add(CreateCourseRequest createCourseRequest)
 		{
+            await _courseBusinessRules.EachCategoryMustContainMax20Products(createCourseRequest.CategoryId);
             Course course = _mapper.Map<Course>(createCourseRequest);
             course.Id = Guid.NewGuid();
 

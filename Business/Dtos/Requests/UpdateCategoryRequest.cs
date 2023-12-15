@@ -9,6 +9,6 @@ namespace Business.Dtos.Requests
     public class UpdateCategoryRequest
     {
         public Guid CategoryId { get; set; }
-        public string CategoryName { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Dtos.Requests
+namespace Core.Rules
 {
-	public class CreateCategoryRequest
-	{
-		public string Name { get; set; }
-	}
+    public class BaseBusinessRules
+    {
+    }
 }
